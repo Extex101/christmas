@@ -15,6 +15,7 @@ This is a Mod for [Minetest](https://www.minetest.net/) ( [Github Repo](https://
  - Star* (The topper of your tree)
  - Present (Give a gift to a firend)
  - Sugar* (To craft your sweets)
+ - Tree (The center of all decorations)
 
 * Only obtainable as a Stocking reward
 
