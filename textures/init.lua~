@@ -1,0 +1,195 @@
+christmas = {}
+christmas.players = {}
+christmas.data = minetest.get_mod_storage("christmas")
+
+local function xplayer(player)
+	if not player:is_player() then
+		return
+	end
+	local name = player:get_player_name() 
+	return christmas.players[name]
+end
+
+function christmas.get_present_formspec(pos)--Taken from default chest
+	local spos = pos.x .. "," .. pos.y .. "," .. pos.z
+	local formspec =
+		"size[8,9]" ..
+		"list[nodemeta:" .. spos .. ";main;0,0.3;8,4;]" ..
+		"list[current_player;main;0,4.85;8,1;]" ..
+		"list[current_player;main;0,6.08;8,3;8]" ..
+		"listring[nodemeta:" .. spos .. ";main]" ..
+		"listring[current_player;main]" 
+	return formspec
+end
+
+local function to_time(time)
+  local remaining = time % 86400
+  remaining = remaining % 3600
+  local minutes = math.floor(remaining/60)
+  remaining = remaining % 60
+  local seconds = remaining
+  if (minutes < 10) then
+    minutes = "0" .. tostring(minutes)
+  end
+  if (seconds < 10) then
+    seconds = "0" .. tostring(seconds)
+  end
+  answer = minutes..':'..seconds
+  return answer
+end
+
+function christmas.eat_candy(hp_change, replace_with_item)
+    return function(itemstack, user, pointed_thing) 
+	    local name = user:get_player_name()
+		local p = xplayer(user)
+		christmas.players[name].candy = p.candy +1
+		if p.candy == 8 then
+			p.time = 60
+			p.hud.ui = user:hud_add({
+				hud_elem_type = "image",
+				position  = {x = 0.1, y = 0.5},
+			    offset    = {x = -220, y = -260},
+			    text      = "christmas_powerup_ui.png",
+			    scale     = { x = 16, y = 17},
+			    alignment = { x = 1, y = 0 },
+			})
+			p.hud.icon = user:hud_add({
+				hud_elem_type = "image",
+				position  = {x = 0.1, y = 0.5},
+			    offset    = {x = -90, y = -251},
+			    text      = "christmas_candy_cane.png",
+			    scale     = { x = 16, y = 16},
+			    alignment = { x = 1, y = 0 },
+			})
+			p.hud.time = user:hud_add({
+				hud_elem_type = "text",
+				position  = {x = 0.1, y = 0.5},
+			    offset    = {x = 10, y = -10},
+			    text      = to_time (p.time),
+				number = 0xffffff,
+			    scale     = { x = 16, y = 16},
+			    alignment = { x = 0, y = 0 },
+			})
+		end
+		if p.time > 0 then
+			p.time = p.time + 3
+		end
+        return minetest.do_item_eat(hp_change, replace_with_item, itemstack, user, pointed_thing)
+    end
+end
+
+minetest.register_craftitem("christmas:candy_cane", {
+	description = "Candy Cane",
+	inventory_image = "christmas_candy_cane.png",
+	on_use = christmas.eat_candy(1)
+})
+minetest.register_craftitem("christmas:mince_pie", {
+	description = "Mince Pie",
+	inventory_image = "christmas_mincepie.png",
+	on_use = minetest.item_eat(2)
+})
+minetest.register_craftitem("christmas:gingerbread_man", {
+	description = "Gingerbread Man",
+	inventory_image = "christmas_gingerbread_man.png",
+	on_use = minetest.item_eat(2)
+})
+minetest.register_craftitem("christmas:cracker", {
+	description = "Christmas Cracker\n (To be shared with a friend)",
+	inventory_image = "christmas_cracker.png",
+	on_use = minetest.item_eat(2)
+})
+
+minetest.register_node("christmas:eggnog", {
+	description = "Eggnog",
+	drawtype = "plantlike",
+	tiles = {"christmas_eggnog.png"},
+	inventory_image = "christmas_eggnog.png",
+	on_use = minetest.item_eat(10),
+	groups = {vessel = 1, dig_immediate = 3, attached_node = 1},
+})
+minetest.register_node("christmas:present", {
+	description = "Christmas present",
+	tiles = {
+			"christmas_present.png",
+			"christmas_present_top.png"
+	},
+	drawtype = "mesh",
+	paramtype = "light",
+	mesh = "christmas_present.obj",
+	groups = {oddly_breakable_by_hand = 3, attached_node = 1},
+	on_construct = function(pos, itemstack, placer, pointed_thing)
+		local meta = minetest.get_meta(pos)
+		meta:set_string("infotext", "Christmas Present")
+		meta:set_string("owner", "")
+		local inv = meta:get_inventory()
+		inv:set_size("main", 1)
+	end,
+	after_place_node = function(pos, placer)
+		local meta = minetest.get_meta(pos)
+		meta:set_string("owner", placer:get_player_name() or "")
+		meta:set_string("infotext", "Present from ".. meta:get_string("owner"))
+	end,
+	on_rightclick = function(pos, node, player, itemstack, pointed_thing)
+		minetest.after(0.2, 
+			minetest.show_formspec, 
+			player:get_player_name(), 
+			"christmas:present", 
+			christmas.get_present_formspec(pos))
+	end,
+})
+minetest.register_node("christmas:stocking", {
+	description = "Christmas Stocking",
+	drawtype = "signlike",
+	tiles = {"christmas_stocking.png"},
+	inventory_image = "christmas_stocking.png",
+	paramtype = "light",
+	paramtype2 = "wallmounted",
+	sunlight_propagates = true, 
+	selection_box = {
+		type = "wallmounted",
+	},
+	groups = {snappy = 2, choppy = 2, oddly_breakable_by_hand = 3},
+	walkable = false,
+	on_construct = function(pos, itemstack, player)
+		local meta = minetest.get_meta(pos)
+		meta:set_string("infotext", player:get_player_name().."'s Stocking")
+	end, 
+})
+minetest.register_on_joinplayer(function(player)
+	local name = player:get_player_name()
+	christmas.players[name] = {}
+	christmas.players[name].candy = 0
+	christmas.players[name].hud = {}
+	christmas.players[name].time = 0
+end)
+
+local t = 0
+minetest.register_globalstep (function(dtime)
+	t = t + dtime
+	if t > 1 then 
+		t = 0
+	end
+	for _, player in ipairs(minetest.get_connected_players()) do
+		local p = xplayer(player)
+		if p.time > 0 and t > 1-dtime then
+			p.time = p.time - 1
+			player:hud_change(p.hud.time, "text", to_time(p.time))
+		elseif math.floor(p.time) == 1 then
+			p.candy = 0
+		end
+		if p.time > 0 then
+			player:set_physics_override({
+				speed = 2.5,
+			})
+		end
+		--minetest.chat_send_all(p.candy)
+		if p.time == 0 then
+			player:set_physics_override({
+				speed = 1,
+			})
+			player:hud_remove(p.hud.ui)
+			player:hud_remove(p.hud.icon)
+			player:hud_remove(p.hud.time)
+		end
+	end
+end)
