@@ -20,6 +20,7 @@ This is a Mod for [Minetest](https://www.minetest.net/) ( [Github Repo](https://
 * Only obtainable as a Stocking reward
 
 
-View the Minetest forum post [here]()
+View the Minetest forum post [here](https://forum.minetest.net/viewtopic.php?f=9&t=23782&)
+
 
 Have fun and Merry Christmas!!
