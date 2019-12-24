@@ -165,12 +165,15 @@ minetest.register_node("christmas:stocking", {
 			minetest.chat_send_player(owner, "Your stocking is empty. (refill in: "..time..")")--Whyyyyyyy??? 😭
 		elseif not inv:is_empty("main") then
 			local item1 = inv:get_stack("main", 1)
-			local leftover1 = playerinv:add_item("main", item1)
+			playerinv:add_item("main", item1)
 			local item2 = inv:get_stack("main", 2)
-			local leftover2 = playerinv:add_item("main", item2)
+			playerinv:add_item("main", item2)
 			local item3 = inv:get_stack("main", 3)
-			local leftover3 = playerinv:add_item("main", item3)
-			timer:start(5400)
+			playerinv:add_item("main", item3)
+                        inv:set_stack("main", 1 ,'')
+                        inv:set_stack("main", 2 ,'')
+                        inv:set_stack("main", 3 ,'')
+      			timer:start(5400)
 		end
 	end, 
 })
