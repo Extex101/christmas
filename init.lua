@@ -54,10 +54,7 @@ minetest.register_node("christmas:eggnog", {
 })
 minetest.register_node("christmas:present", {
 	description = "Christmas present",
-	tiles = {
-			"christmas_present.png",
-			"christmas_present_top.png"
-	},
+	tiles = {"christmas_present.png"},
 	drawtype = "mesh",
 	paramtype = "light",
 	mesh = "christmas_present.obj",
