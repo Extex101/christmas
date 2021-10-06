@@ -138,9 +138,15 @@ minetest.register_globalstep (function(dtime)
 			player:set_physics_override({
 				speed = 1,
 			})
-			player:hud_remove(p.hud.ui)
-			player:hud_remove(p.hud.icon)
-			player:hud_remove(p.hud.time)
+			if p.hud.ui then
+				player:hud_remove(p.hud.ui)
+			end
+			if p.hud.icon then
+				player:hud_remove(p.hud.icon)
+			end
+			if p.hud.time then
+				player:hud_remove(p.hud.time)
+			end
 		end
 	end
 end)
