@@ -197,7 +197,7 @@ core.register_node("christmas:eggnog", {
 		local dir = math.deg(placer:get_look_horizontal())/1.5
 		core.swap_node(pos, {name = "christmas:eggnog", param2 = dir})
 	end,
-	sounds = default.node_sound_glass_defaults(),
+	sounds = xcompat.sounds.node_sound_glass_defaults(),
 	groups = {vessel = 1, dig_immediate = 3, attached_node = 3},
 })
 

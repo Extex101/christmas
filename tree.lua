@@ -180,7 +180,7 @@ core.register_node("christmas:tree", {
 	end,
 })
 
-if core.get_modpath("mesecons_mvps") then
+if core.global_exists("mesecon") and core.get_modpath("mesecons_mvps") then
 	mesecon.register_mvps_stopper("christmas:tree")
 end
 

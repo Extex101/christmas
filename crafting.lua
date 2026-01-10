@@ -20,24 +20,30 @@ end
 
 
 
-if depends.wool then
-	core.register_craft({
-		output = "christmas:stocking",
-		recipe = {
-			{"","wool:white","wool:white"},
-			{"default:gold_ingot","wool:red","wool:red"},
-			{"wool:red","wool:red","wool:red"},
-		},
-	})
-end
+local wool_white = xcompat.materials.wool_white
 
+--Why doesn't xcompat have red wool?
+local wool_red = xcompat.gameid == "minetest" and "wool:red" or xcompat.gameid == "mineclonia" and "mcl_wool:red" or white
+local gold = xcompat.materials.gold_ingot
+
+core.register_craft({
+	output = "christmas:stocking",
+	recipe = {
+		{"",wool_white,wool_white},
+		{gold,wool_red,wool_red},
+		{wool_red,wool_red,wool_red},
+	},
+})
+
+local dye_red = xcompat.materials.dye_red
+local dye_white = xcompat.materials.dye_white
 if depends.dye then
 	core.register_craft({
 		output = "christmas:candy_cane 12",
 		recipe = {
-			{"dye:red","christmas:sugar","dye:white"},
-			{"christmas:sugar","dye:white","christmas:sugar"},
-			{"christmas:sugar","dye:red",""},
+			{dye_red,"christmas:sugar",dye_white},
+			{"christmas:sugar",dye_white,"christmas:sugar"},
+			{"christmas:sugar",dye_red,""},
 		},
 	})
 end

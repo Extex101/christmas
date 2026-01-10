@@ -1,11 +1,26 @@
-function christmas.get_present_formspec(pos)--Taken from default chest
-	local spos = pos.x .. "," .. pos.y .. "," .. pos.z
-	local formspec =
-		"size[8,9]" ..
-		"list[nodemeta:" .. spos .. ";gift;3.5,2.5;1,1;]" ..
+function christmas.get_present_formspec(pos)
+	local source = "nodemeta:"..pos.x .. "," .. pos.y .. "," .. pos.z
+	
+	local formspec = ""
+	if core.global_exists("mcl_formspec") then
+		formspec = formspec..
+		"size[9,9]"..
+		mcl_formspec.get_itemslot_bg(4, 2.5, 1, 1) ..
+		"list["..source..";gift;4,2.5;1,1;]" ..
+		mcl_formspec.get_itemslot_bg(0, 4.85, 9, 1) ..
+		"list[current_player;main;0,4.85;9,1;]" ..
+		mcl_formspec.get_itemslot_bg(0, 6.08, 9, 3) ..
+		"list[current_player;main;0,6.08;9,3;9]"
+	else
+		formspec = formspec..
+		"size[8,9]"..
+		"list["..source..";gift;3.5,2.5;1,1;]" ..
 		"list[current_player;main;0,4.85;8,1;]" ..
-		"list[current_player;main;0,6.08;8,3;8]" ..
-		"listring[nodemeta:" .. spos .. ";gift]" ..
+		"list[current_player;main;0,6.08;8,3;8]"
+	end
+
+	formspec = formspec ..
+		"listring[".. source ..";gift]" ..
 		"listring[current_player;main]" 
 	return formspec
 end
