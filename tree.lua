@@ -180,9 +180,11 @@ core.register_node("christmas:tree", {
 	end,
 })
 
-if core.global_exists("mesecon") and core.get_modpath("mesecons_mvps") then
+if core.global_exists("mesecon") and core.get_modpath("mesecons_mvps") and mesecon.register_mvps_stopper then
 	mesecon.register_mvps_stopper("christmas:tree")
 end
+
+local paper = xcompat.materials.paper
 
 for name, col in pairs(christmas.dyes) do
     local title = capitalize(name)
@@ -374,16 +376,16 @@ for name, col in pairs(christmas.dyes) do
 			christmas.get_present_formspec(pos))
 		end,
 	})
-	local dye = "dye:"..name
+	local dye = xcompat.materials["dye_"..name]
 	if name == "gold" then
-		dye = "default:gold_ingot"
+		dye = xcompat.materials.gold_ingot
 	end
 	core.register_craft({
 		output = "christmas:present_"..name,
 		recipe = {
-			{"default:paper","default:paper","default:paper"},
-			{"default:paper",dye,"default:paper"},
-			{"default:paper","default:paper","default:paper"},
+			{paper,paper,paper},
+			{paper,dye,paper},
+			{paper,paper,paper},
 		},
 	})
 end
